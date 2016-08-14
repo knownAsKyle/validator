@@ -12,7 +12,6 @@
             margin: 0;
         }
         #form .validate{
-            min-width: 100px;
             font-size: 20px;
             padding: 3px;
             margin: 2px 2px 2px 10px;
@@ -28,22 +27,24 @@
     </head>
     <body>
         <h1>Form</h1>
-        <form id="form">
+        <div id="form">
             <input id="name" type="text" placeholder="name" class="validate" required>
-            <input id="email" type="email" placeholder="email" class="validate" required email>
+            <input id="email" type="email" placeholder="email" class="validate" required email minlength maxlength>
             <input id="phone" type="text" placeholder="phone" class="validate" required phone>
             <div class="submitButton">submit</div>
-        </form>
+        </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="Validator.js"></script>
         <script>
             var validator = new Validator($("#form"));
             var inputs = $(".validate");
             var submit = $(".submitButton");
-            submit.on("click", handleSubmitClick);
-            inputs.on("keyup change", handleSubmitClick)
+            submit.on("click", handleSubmitClick);       
             function handleSubmitClick(e){
-                e.preventDefault();
+                if(!window.validatorFistClick){
+                    window.validatorFistClick = true;
+                    inputs.on("keyup change", handleSubmitClick);
+                }
                 validator.validate();
             }
 

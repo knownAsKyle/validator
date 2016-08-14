@@ -16,7 +16,7 @@ var Validator = (function() {
         },
         maxLength: function(value) {
             return {
-                valid: (value && value.length >= defaultMaxLength),
+                valid: (value && value.length <= defaultMaxLength),
                 message: "Max Length of " + defaultMaxLength + " not satisfied"
             };
         },
@@ -63,7 +63,7 @@ var Validator = (function() {
                 function checkForRule(val, rule) {
                     if (keepChecking && typeof field.attr(rule) === "string") {
                         var check = validateFunctions[rule](field.val());
-                        field.css("background", (!check.valid ? "red" : ""))
+                        doFailedAnimationOrActionOrWhatever(!check.valid);
                         if (!check.valid) {
                             _this.valid = false;
                             keepChecking = false;
@@ -71,6 +71,10 @@ var Validator = (function() {
                         }
                     }
                     return rule;
+                }
+
+                function doFailedAnimationOrActionOrWhatever(fail) {
+                    field.css("background", (fail ? "red" : ""))
                 }
             } else {
                 console.info("Done validating - ready to send?:", _this.valid)
