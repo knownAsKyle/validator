@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+        <title>
+        </title>
+        <style>
+            #form{
+                width: 50%;
+                height: 500px;
+                background-color: blue;
+            }
+
+            #form .validate{
+                min-width: 100px;
+                min-height: 30px;
+                padding: 2px;
+
+            }
+
+            #form .submitButton{
+                background: #ccc;
+                padding: 10px;
+                width: 50px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Form</h1>
+        <form id="form">
+            <p>
+                <input id="name" name="name" type="text" placeholder="name" class="validate">
+            </p>
+            <p>
+                <input id="email" type="email" name="email" placeholder="email" class="validate">
+            </p>
+            <p>
+                <input id="phone" type="text" name="phone" placeholder="phone" class="validate">
+            </p>
+            <div class="submitButton">submit</div>
+        </form>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="Validator.js"></script>
+        <script>
+            var validator = new Validator($("#form"));
+            var submit = document.getElementsByClassName("submitButton")[0];
+            submit.addEventListener("click", handleSubmitClick);
+            function handleSubmitClick(e){
+                e.preventDefault();
+                validator.validate();
+            }
+
+            
+        </script>
+    </body>
+</html>
