@@ -45,7 +45,9 @@
                     window.validatorFistClick = true;
                     inputs.on("keyup change", handleSubmitClick);
                 }
-                validator.validate();
+                validator.validate(function(isValid){
+                    console.log("is valid: ",isValid)
+                });
             }
 
         </script>

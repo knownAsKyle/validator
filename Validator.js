@@ -1,6 +1,10 @@
 var Validator = (function() {
     var defaultMinLength = 2;
     var defaultMaxLength = 20;
+    // (http://jsfiddle.net/ghvj4gy9/embedded/result,js/)
+    var emailStr = new RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+    //(http://www.zparacha.com/phone_number_regex/)
+    var phoneStr = new RegExp(/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/);
     var validateFunctions = {
         required: function(value) {
             return {
@@ -21,18 +25,14 @@ var Validator = (function() {
             };
         },
         email: function(value) {
-            // (http://jsfiddle.net/ghvj4gy9/embedded/result,js/)
-            var str = new RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
             return {
-                valid: (str.test(value)),
+                valid: (emailStr.test(value)),
                 message: "Not valid email"
             }
         },
         phone: function(value) {
-            //(http://www.zparacha.com/phone_number_regex/)
-            var str = new RegExp(/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/);
             return {
-                valid: (str.test(value)),
+                valid: (phoneStr.test(value)),
                 message: "Not valid phone number"
             }
         }
@@ -44,12 +44,14 @@ var Validator = (function() {
     Validator.prototype.setForm = function(form) {
         this.form = form;
     }
-    Validator.prototype.validate = function() {
+    Validator.prototype.validate = function(cb) {
         var _this = this;
         _this.valid = true;
         if (_this.form) {
             _this.fields = $.makeArray(_this.form.find(".validate"));
             _validate(_this.fields[0]);
+        } else {
+            return cb(false);
         }
 
         function _validate(field) {
@@ -77,7 +79,7 @@ var Validator = (function() {
                     field.css("background", (fail ? "red" : ""))
                 }
             } else {
-                console.info("Done validating - ready to send?:", _this.valid)
+                return cb(_this.valid);
             }
         }
     };
