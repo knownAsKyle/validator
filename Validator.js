@@ -1,4 +1,4 @@
-var Validator = Validator || (function(form) {
+var Validator = (function() {
     var defaultMinLength = 2;
     var defaultMaxLength = 20;
     var validateFunctions = {
@@ -41,7 +41,7 @@ var Validator = Validator || (function(form) {
     function Validator(form) {
         this.form = form;
     }
-    Validator.protoype.setForm = function(form) {
+    Validator.prototype.setForm = function(form) {
         this.form = form;
     }
     Validator.prototype.validate = function() {
@@ -78,4 +78,4 @@ var Validator = Validator || (function(form) {
         }
     };
     return Validator;
-})(form);
+})();
