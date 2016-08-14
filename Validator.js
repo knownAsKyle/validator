@@ -1,4 +1,6 @@
 var Validator = Validator || (function(form) {
+    var defaultMinLength = 2;
+    var defaultMaxLength = 20;
     var validateFunctions = {
         required: function(value) {
             return {
@@ -8,70 +10,67 @@ var Validator = Validator || (function(form) {
         },
         minLength: function(value) {
             return {
-                valid: (value && value.length >= 3),
-                message: "Min Length of 3 not satisfied"
+                valid: (value && value.length >= defaultMinLength),
+                message: "Min Length of " + defaultMinLength + " not satisfied"
             };
+        },
+        maxLength: function(value) {
+            return {
+                valid: (value && value.length >= defaultMaxLength),
+                message: "Max Length of " + defaultMaxLength + " not satisfied"
+            };
+        },
+        email: function(value) {
+            // (http://jsfiddle.net/ghvj4gy9/embedded/result,js/)
+            var str = new RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+            return {
+                valid: (str.test(value)),
+                message: "Not valid email"
+            }
+        },
+        phone: function(value) {
+            //(http://www.zparacha.com/phone_number_regex/)
+            var str = new RegExp(/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/);
+            return {
+                valid: (str.test(value)),
+                message: "Not valid phone number"
+            }
         }
     }
 
     function Validator(form) {
         this.form = form;
-        this.fields = null;
-        this.options = {
-            name: name,
-            email: email,
-            phone: phone
-        }
-
-        function name(val) {
-            var rules = ["required"];
-            for (rule in rules) {
-                var check = validateFunctions[rules[rule]](val);
-                if (!check.valid) return check.message;
-            }
-            return false;
-        }
-
-        function email(val) {
-            var rules = ["required", "minLength"];
-            for (rule in rules) {
-                var check = validateFunctions[rules[rule]](val);
-                if (!check.valid) return check.message;
-            }
-            return false;
-        }
-
-        function phone(val) {
-            var rules = ["required"];
-            for (rule in rules) {
-                var check = validateFunctions[rules[rule]](val);
-                if (!check.valid) return check.message;
-            }
-            return false;
-        }
+    }
+    Validator.protoype.setForm = function(form) {
+        this.form = form;
     }
     Validator.prototype.validate = function() {
         var _this = this;
         _this.valid = true;
         if (_this.form) {
-            _this.fields = _this.form.find(".validate");
-            _this.fields = $.makeArray(_this.fields);
+            _this.fields = $.makeArray(_this.form.find(".validate"));
             _validate(_this.fields[0]);
         }
 
         function _validate(field) {
             if (field) {
+                var keepChecking = true;
                 field = $(field);
-                var option = field.attr("name");
-                var valid = _this.options[option];
-                if (valid && typeof valid === "function") {
-                    var check = valid(field.val());
-                    if (check) {
-                        _this.valid = false;
+                $.map(validateFunctions, checkForRule);
+                _this.fields.shift();
+                _validate(_this.fields[0]);
+
+                function checkForRule(val, rule) {
+                    if (keepChecking && typeof field.attr(rule) === "string") {
+                        var check = validateFunctions[rule](field.val());
+                        field.css("background", (!check.valid ? "red" : ""))
+                        if (!check.valid) {
+                            _this.valid = false;
+                            keepChecking = false;
+                            console.log(check.message);
+                        }
                     }
-                    var errElement = field.css("background", (check ? "red" : ""))
-                    _this.fields.shift();
-                    _validate(_this.fields[0]);
+                    return rule;
                 }
             } else {
                 console.info("Done validating - ready to send?:", _this.valid)
